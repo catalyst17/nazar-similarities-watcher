@@ -22,7 +22,7 @@ fn push_create(
     trx: &Transaction
 ) {
     changes
-        .push_change("transactions", &trx.hash, ordinal, Operation::Create)
+        .push_change("similar_transactions", &trx.hash, ordinal, Operation::Create)
         .change("chain", (None, &trx.chain))
         .change("aaType", (None, &trx.account_abstraction_type))
         .change("status", (None, &trx.status))

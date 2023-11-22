@@ -1,8 +1,8 @@
 use crate::pb::eth::transaction::v1::{Transaction, Transactions};
 use crate::abi;
-use substreams::{log, Hex};
-use substreams_ethereum::block_view::{CallView, LogView};
-use substreams_ethereum::pb::eth::v2::{Block, TransactionTrace, CallType};
+use substreams::Hex;
+use substreams_ethereum::block_view::CallView;
+use substreams_ethereum::pb::eth::v2::{Block, TransactionTrace};
 
 // #[derive(Deserialize)]
 struct TransactionFilters {
@@ -83,40 +83,18 @@ fn call_signature_filter(trx_trace: &TransactionTrace, signature: &String) -> bo
 fn call_signature_match(call: &CallView, signature: &String) -> bool {
     match signature.as_str() {
         "handleOps" => {
-            match abi::entrypoint::functions::HandleOps::decode(&call.call) {
-                Ok(decoded) => {
-                    log::info!("handleOps found, with beneficiary address: {}", Hex::encode(decoded.beneficiary));
-                    return true
-                }
-                Err(_) => return false,
-            }
+            return abi::entrypoint::functions::HandleOps::match_call(&call.call);
         }
         "innerHandleOp" => {
-            match abi::entrypoint::functions::InnerHandleOp::decode(&call.call) {
-                Ok(_decoded) => {
-                    log::info!("innerHandleOp found");
-                    return true
-                }
-                Err(_) => return false,
-            }
+            return abi::entrypoint::functions::InnerHandleOp::match_call(&call.call);
         }
         "simulateValidation" => {
-            match abi::entrypoint::functions::SimulateValidation::decode(&call.call) {
-                Ok(_decoded) => {
-                    log::info!("simulateValidation found");
-                    return true
-                }
-                Err(_) => return false,
-            }
+            return abi::entrypoint::functions::SimulateValidation::match_call(&call.call);
+            
         }
         "addStake" => {
-            match abi::entrypoint::functions::AddStake::decode(&call.call) {
-                Ok(_decoded) => {
-                    log::info!("addStake found");
-                    return true
-                }
-                Err(_) => return false,
-            }
+            return abi::entrypoint::functions::AddStake::match_call(&call.call);
+            
         }
         _ => return false
     }
